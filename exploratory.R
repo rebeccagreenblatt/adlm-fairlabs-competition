@@ -2,6 +2,9 @@ library(dplyr)
 library(ggplot2)
 #devtools::install_github("ropensci/plotly")
 library(plotly)
+#install.packages("datamods")
+library(datamods)
+source("make_funnelplot.R")
 
 dat <- read.csv("fairlabs_data.csv")
 head(dat)
@@ -72,30 +75,6 @@ dsfbyrace <- dsf %>% group_by(maternal_race) %>%
             reported = sum(cps_reporting_date != ""), 
             reported_for_thc = sum(detected_tetrahydrocannabinol == 1 & cps_reporting_date != "", na.rm = TRUE))
 
-names = c("Overall", "Screened", "THC positive", "Reported for THC")
+#https://dreamrs.github.io/datamods/reference/edit-data.html
 
-
-fig <- plot_ly(
-  type = "funnel",
-  name = dsfbyrace$maternal_race[1],
-  orientation = "h",
-  y = names,
-  x = unlist(dsfbyrace[1,c(2:4,6)]),
-  textinfo = "value+percent initial") 
-for(i in 2:5){
-  fig <- fig %>%
-    add_trace(
-      type = "funnel",
-      name = dsfbyrace$maternal_race[i],
-      orientation = "h",
-      y = names,
-      x = unlist(dsfbyrace[i,c(2:4,6)]),
-      textinfo = "values+percent initial")
-}
-
-fig <- fig %>%
-  layout(yaxis = list(categoryarray = names))
-
-fig
-
-
+make_funnelplot(dsfbyrace[,c(1:4,6)])
