@@ -8,7 +8,8 @@ make_funnelplot <- function(dat){
     orientation = "h",
     y = names,
     x = unlist(dat[1,2:ncol(dat)]),
-    textinfo = "value+percent initial") 
+    textinfo = "x+percent initial",
+    hoverinfo = "x+percent previous+percent initial")
   
   for(i in 2:nrow(dat)){
     fig <- fig %>%
@@ -18,7 +19,8 @@ make_funnelplot <- function(dat){
         orientation = "h",
         y = names,
         x = unlist(dat[i,2:ncol(dat)]),
-        textinfo = "values+percent initial")
+        textinfo = "x+percent initial",
+        hoverinfo = "x+percent previous+percent initial")
   }
   
   fig <- fig %>%

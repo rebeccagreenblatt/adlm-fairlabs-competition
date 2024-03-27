@@ -3,13 +3,22 @@ library(ggplot2)
 #devtools::install_github("ropensci/plotly")
 library(plotly)
 #install.packages("datamods")
-library(datamods)
+library(DT)
 source("make_funnelplot.R")
+library(shiny)
 
 dat <- read.csv("fairlabs_data.csv")
 head(dat)
 
-ds <- dat %>% select(mother_id, maternal_race, maternal_age, uds_collection_date, detected_tetrahydrocannabinol, cps_reporting_date)
+dat$num_pos <- rep(NA, nrow(dat))
+for(i in 1:nrow(dat)){
+  dat$num_pos[i] <- sum(dat[i,9:54], na.rm = TRUE)
+}
+
+ds <- dat %>% 
+  select(mother_id, maternal_race, maternal_age, 
+         uds_collection_date, detected_tetrahydrocannabinol,
+         num_pos, cps_reporting_date)
 dim(ds)
 head(ds)
 length(unique(dat$mother_id)) #6528
@@ -36,7 +45,7 @@ summary(model)
 # maternal_raceOther Pacific Islander    -0.0170488  0.0670680  -0.254  0.79935    
 # maternal_raceWhite                     -0.0089774  0.0540109  -0.166  0.86799    
 # maternal_age                           -0.0028083  0.0006424  -4.372 1.25e-05 ***
-### highly dependent on maternal age, must take this into account 
+### highly dependent on maternal age
 
 ## need to test for colinearity between race and age
 tapply(dsf$maternal_age, dsf$maternal_race,
@@ -71,10 +80,17 @@ dsf$age_cat <- cut(dsf$maternal_age, breaks = c(12,19,24,29,34,39,49), include.l
 dsfbyrace <- dsf %>% group_by(maternal_race) %>%
   summarise(total = n(), 
             num_tested = sum(tested), 
-            thc_pos = sum(detected_tetrahydrocannabinol == 1, na.rm = TRUE), 
-            reported = sum(cps_reporting_date != ""), 
-            reported_for_thc = sum(detected_tetrahydrocannabinol == 1 & cps_reporting_date != "", na.rm = TRUE))
-
+            pos_test = sum(num_pos > 0),
+            thc_only_pos = sum(detected_tetrahydrocannabinol == 1 & num_pos == 1, na.rm = TRUE), 
+            reported_for_thc_only = sum(detected_tetrahydrocannabinol == 1 & num_pos == 1 & cps_reporting_date != "", na.rm = TRUE))
+colnames(dsfbyrace) <- c("Maternal Race/Ethnicity", "Total", "Number Tested", "Positive Test", "Positive for THC only", "Reported to CPS for THC only")
 #https://dreamrs.github.io/datamods/reference/edit-data.html
 
-make_funnelplot(dsfbyrace[,c(1:4,6)])
+write.csv(dsfbyrace, "uds_dat.csv", row.names = FALSE)
+
+make_funnelplot(dsfbyrace)
+
+
+
+
+
