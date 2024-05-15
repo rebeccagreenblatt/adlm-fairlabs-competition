@@ -1,0 +1,6 @@
+﻿Group (ex: Gender),Total,Step 1 (ex: Number screened),Step 2 (ex: Number of positive screens),Step 3 (delete column if not using),Step 4 (delete column if not using),Step 5 (delete column if not using)
+Group1 (ex: Female),0,0,0,0,0,0
+Group2 (ex: Male),0,0,0,0,0,0
+Group3 (delete row if not using),0,0,0,0,0,0
+Group 4 (delete row if not using),0,0,0,0,0,0
+Group 5 (delete row if not using),0,0,0,0,0,0

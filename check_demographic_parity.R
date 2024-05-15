@@ -8,9 +8,10 @@ check_demographic_parity <- function(dat){
     pvals[i-2] <- p$p.value
     }
   
-  sig <- ifelse(pvals < 0.05, "Fails Relative to Previous Step (p < 0.05)", "Passes Relative to Previous Step (p >= 0.05)")
+  sig <- ifelse(pvals < 0.05, "Fails Relative to Previous Step", "Passes Relative to Previous Step")
   
-  toreturn <- data.frame("Step" = colnames(dat)[3:ncol(dat)], "Demographic Parity" = sig)
+  toreturn <- data.frame(colnames(dat)[3:ncol(dat)], sig)
+  colnames(toreturn) <- c("Step", "Demographic Parity")
   
   return(toreturn)
   
